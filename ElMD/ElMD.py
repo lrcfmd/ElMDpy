@@ -23,7 +23,7 @@ __author__ = "Cameron Hargreaves"
 __copyright__ = "2019, Cameron Hargreaves"
 __credits__ = ["https://github.com/Zapaan", "Loïc Séguin-C. <loicseguin@gmail.com>", "https://github.com/Bowserinator/"]
 __license__ = "GPL"
-__version__ = "0.5.1"
+__version__ = "0.0.1"
 __maintainer__ = "Cameron Hargreaves"
 
 '''
@@ -37,8 +37,6 @@ from collections import Counter
 from copy import deepcopy
 
 import numpy as np
-from scipy.spatial.distance import squareform
-from numba import njit
 from functools import lru_cache
 
 
@@ -88,7 +86,7 @@ def _get_periodic_tab(metric):
     return ElementDict, local_lookup_folder
     
 
-def elmd(comp1, comp2, metric="mod_petti", return_assignments=False):
+def elmd(comp1, comp2, metric="fast", return_assignments=False):
     if isinstance(comp1, str):
         comp1 = ElMD(comp1, metric=metric)
         source_demands = comp1.ratio_vector
@@ -142,7 +140,7 @@ def EMD(source_demands, sink_demands, network_costs):
 
     return network_simplex(source_demands, sink_demands, network_costs)
 
-@njit()
+
 def simple_emd(dist1, dist2):
     return np.sum(np.abs(np.cumsum(dist1 - dist2)))
 
@@ -155,7 +153,7 @@ class ElMD():
     # all floats to capture the decimal places
     FP_MULTIPLIER = 100000000
 
-    def __init__(self, formula="", metric="mod_petti", strict_parsing=False, x=1):
+    def __init__(self, formula="", metric="fast", strict_parsing=False, x=1):
         self.metric = metric
         
         if isinstance(formula, ElMD):
@@ -531,7 +529,7 @@ All rights reserved.
 BSD license.
 '''
 
-@njit()
+
 def reduced_cost(i, costs, potentials, tails, heads, flows):
     """Return the reduced cost of an edge i.
     """
@@ -542,7 +540,7 @@ def reduced_cost(i, costs, potentials, tails, heads, flows):
     else:
         return -c
 
-@njit()
+
 def find_entering_edges(e, f, tails, heads, costs, potentials, flows):
     """Yield entering edges until none can be found.
     """
@@ -598,7 +596,7 @@ def find_entering_edges(e, f, tails, heads, costs, potentials, flows):
     # All edges have nonnegative reduced costs. The flow is optimal.
     return -1, -1, -1, -1
 
-@njit()
+
 def find_apex(p, q, size, parent):
     """Find the lowest common ancestor of nodes p and q in the spanning
     tree.
@@ -622,7 +620,7 @@ def find_apex(p, q, size, parent):
             else:
                 return p
 
-@njit()
+
 def trace_path(p, w, edge, parent):
     """Return the nodes and edges on the path from node p to its ancestor
     w.
@@ -637,7 +635,7 @@ def trace_path(p, w, edge, parent):
 
     return cycle_nodes, cycle_edges
 
-@njit()
+
 def find_cycle(i, p, q, size, edge, parent):
     """Return the nodes and edges on the cycle containing edge i == (p, q)
     when the latter is added to the spanning tree.
@@ -662,7 +660,7 @@ def find_cycle(i, p, q, size, edge, parent):
 
     return cycle_nodes, cycle_edges
 
-@njit()
+
 def residual_capacity(i, p, capac, flows, tails):
     """Return the residual capacity of an edge i in the direction away
     from its endpoint p.
@@ -673,7 +671,7 @@ def residual_capacity(i, p, capac, flows, tails):
     else:
         return flows[np.int64(i)]
 
-@njit()
+
 def find_leaving_edge(cycle_nodes, cycle_edges, capac, flows, tails, heads):
     """Return the leaving edge in a cycle represented by cycle_nodes and
     cycle_edges.
@@ -693,7 +691,7 @@ def find_leaving_edge(cycle_nodes, cycle_edges, capac, flows, tails, heads):
     t = heads[np.int64(j)] if tails[np.int64(j)] == s else tails[np.int64(j)]
     return j, s, t
 
-@njit()
+
 def augment_flow(cycle_nodes, cycle_edges, f, tails, flows):
     """Augment f units of flow along a cycle representing Wn with cycle_edges.
     """
@@ -703,7 +701,7 @@ def augment_flow(cycle_nodes, cycle_edges, f, tails, flows):
         else:
             flows[int(i)] -= f
 
-@njit()
+
 def trace_subtree(p, last, next):
     """Yield the nodes in the subtree rooted at a node p.
     """
@@ -717,7 +715,6 @@ def trace_subtree(p, last, next):
 
     return np.array(tree, dtype=np.int64)
 
-@njit(cache=True)
 def remove_edge(s, t, size, prev, last, next, parent, edge):
     """Remove an edge (s, t) where parent[t] == s from the spanning tree.
     """
@@ -742,7 +739,7 @@ def remove_edge(s, t, size, prev, last, next, parent, edge):
             last[s] = prev_t
         s = parent[s]
 
-@njit()
+
 def make_root(q, parent, size, last, prev, next, edge):
     """
     Make a node q the root of its containing subtree.
@@ -790,7 +787,7 @@ def make_root(q, parent, size, last, prev, next, edge):
         prev[q] = last_p
         last[q] = last_p
 
-@njit()
+
 def add_edge(i, p, q, next, prev, last, size, parent, edge):
     """Add an edge (p, q) to the spanning tree where q is the root of a
     subtree.
@@ -816,7 +813,7 @@ def add_edge(i, p, q, next, prev, last, size, parent, edge):
             last[p] = last_q
         p = parent[p]
 
-@njit()
+
 def update_potentials(i, p, q, heads, potentials, costs, last, next):
     """Update the potentials of the nodes in the subtree rooted at a node
     q connected to its parent p by an edge i.
@@ -830,7 +827,7 @@ def update_potentials(i, p, q, heads, potentials, costs, last, next):
     for q in tree:
         potentials[q] += d
 
-@njit()
+
 def occurs_first(array, item1, item2):
     for val in array:
         if val == item1:
@@ -839,7 +836,7 @@ def occurs_first(array, item1, item2):
         elif val == item2:
             return False
 
-@njit()
+
 def network_simplex(source_demands, sink_demands, network_costs):
     '''
     This is a port of the network simplex algorithm implented by Loïc Séguin-C
