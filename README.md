@@ -10,18 +10,17 @@ This repository provides the reference implementations as described in our paper
 
 If you wish to compute this metric between lots of compositions, the ElM2D high-performance library may be more useful and can be found at www.github.com/lrcfmd/ElM2D.
 
-We recommend installation via pip and python 3.7.
+We recommend installation via pip 
 
 ```
-pip install python==3.7
-pip install ElMD
+pip install ElMDpy
 ```
 
 ## Usage
 For simple usage initiate an object with its compositional formula
 
 ```python
-> from ElMD import ElMD
+> from ElMDpy import ElMD
 > x = ElMD("CaTiO3")
 ```
 
