@@ -1,15 +1,15 @@
 from setuptools import setup, find_packages
 
 setup(
-  name = 'ElMD',        
+  name = 'ElMDpy',        
   packages = ['ElMD'],  
-  version = '0.5.3',
+  version = '0.0.1',
   license='GPL3',       
   description = 'An implementation of the Element movers distance for chemical similarity of ionic compositions',  
   author = 'Cameron Hagreaves',            
   author_email = 'cameron.h@rgreaves.me.uk', 
-  url = 'https://github.com/lrcfmd/ElMD/',   
-  download_url = 'https://github.com/lrcfmd/ElMD/archive/v0.5.3.tar.gz',    
+  url = 'https://github.com/lrcfmd/ElMDpy/',   
+  download_url = 'https://github.com/lrcfmd/ElMDpy/archive/v0.0.1.tar.gz',    
   keywords = ['ChemInformatics', 'Materials Science', 'Machine Learning', 'Materials Representation'],  
   package_data={"elementFeatures": ["el_lookup/*.json"]}, 
   include_package_data=True,
