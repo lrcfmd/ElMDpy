@@ -1,4 +1,6 @@
-# ElMD
+# ElMDpy
+
+This is a pure python implementation of the [ElMD](https://github.com/lrcfmd/ElMD/) library, which excludes the numba dependency. 
 
 ![A drawing of ants moving earth](https://i.imgur.com/fg8Nrma.png)
 
